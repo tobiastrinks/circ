@@ -1,0 +1,55 @@
+{
+  "name": "@ttrinks/circ",
+  "version": "1.0.0",
+  "description": "Command Line Interface to display CircleCI workflow progress.",
+  "main": "src/cli.js",
+  "bin": {
+    "@ttrinks/circ": "bin/circ",
+    "circ": "bin/circ"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cli",
+    "circ"
+  ],
+  "files": [
+    "bin/",
+    "src/"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tobiastrinks/circ.git"
+  },
+  "author": "Tobias Trinks",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tobiastrinks/circ/issues"
+  },
+  "homepage": "https://github.com/tobiastrinks/circ#readme",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "cli-boxes": "^2.2.0",
+    "esm": "^3.2.25",
+    "execa": "^4.0.3",
+    "import-jsx": "^4.0.0",
+    "ink": "^2.7.1",
+    "ink-link": "^1.1.0",
+    "ink-spinner": "^3.1.0",
+    "meow": "^7.0.1",
+    "prop-types": "^15.7.2",
+    "react": "^16.13.1"
+  },
+  "devDependencies": {
+    "@babel/preset-react": "^7.10.4"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-react"
+    ]
+  }
+}
