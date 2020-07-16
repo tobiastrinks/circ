@@ -1,21 +1,24 @@
 'use strict';
 import React, { Component } from 'react';
-import {Text, Box} from 'ink';
+import {Text, Box, Color} from 'ink';
 import PropTypes from "prop-types";
 import importJsx from "import-jsx";
-import {getJobStatusAbstract} from "../constants";
+import {getJobStatusAbstract, JOB_STATUS_ABSTRACT} from "../constants";
 
 const WorkflowStatusIcon = importJsx('./WorkflowStatusIcon.js');
 
 class WorkflowJobSteps extends Component {
   render() {
     const { steps } = this.props;
-    return steps.map((step, stepIndex) => (
-      <Box key={stepIndex}>
-        <WorkflowStatusIcon status={getJobStatusAbstract(step.actions[0].status)} />
-        <Text>{step.name}</Text>
-      </Box>
-    ));
+    return steps.map((step, stepIndex) => {
+      const abstractStatus = getJobStatusAbstract(step.actions[0].status);
+      return (
+        <Box key={stepIndex}>
+          <WorkflowStatusIcon status={abstractStatus}/>
+          <Text>{step.name}</Text>
+        </Box>
+      )
+    });
   }
 }
 

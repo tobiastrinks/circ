@@ -44,8 +44,20 @@ export async function refreshWorkflowJobsUnlessFinished(workflowId, workflowJobs
     JOB_STATUS_ABSTRACT.BLOCKED,
     JOB_STATUS_ABSTRACT.RUNNING,
     JOB_STATUS_ABSTRACT.ON_HOLD
-  ].includes(getJobStatusAbstract(job.status)))
+  ].includes(getJobStatusAbstract(job.status)));
   if (!!activeJob) {
-    return await getWorkflowJobs(workflowId)
+    await sleep(3000);
+    return await getWorkflowJobs(workflowId);
   }
+}
+
+export async function confirmOnHoldJob(workflowId, workflowJobs) {
+  const onHoldJob = workflowJobs.find(job => getJobStatusAbstract(job.status) === JOB_STATUS_ABSTRACT.ON_HOLD);
+  if (!!onHoldJob) {
+    await axios.post(`https://circleci.com/api/v2/workflow/${workflowId}/approve/${onHoldJob.id}`);
+  }
+}
+
+export async function cancelWorkflow(workflowId) {
+  await axios.post(`https://circleci.com/api/v2/workflow/${workflowId}/cancel`);
 }

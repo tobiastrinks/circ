@@ -79,3 +79,8 @@ export function getJobStatusAbstract(status) {
       return JOB_STATUS_ABSTRACT.NO_IDEA;
   }
 }
+
+export const RUNTIME_COMMANDS = {
+  CONFIRM: ':confirm',
+  CANCEL: ':cancel'
+};

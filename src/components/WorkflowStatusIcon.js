@@ -30,7 +30,9 @@ class WorkflowStatusIcon extends Component {
         )
       case JOB_STATUS_ABSTRACT.ON_HOLD:
         return (
-          <Text>⏸</Text>
+          <Box marginRight={2}>
+            <Text>⏸</Text>
+          </Box>
         )
       case JOB_STATUS_ABSTRACT.BLOCKED:
         return (
@@ -42,7 +44,9 @@ class WorkflowStatusIcon extends Component {
         )
       case JOB_STATUS_ABSTRACT.CANCELED:
         return (
-          <Text>✖️</Text>
+          <Box marginRight={2}>
+            <Text>✖️</Text>
+          </Box>
         )
       case JOB_STATUS_ABSTRACT.WAITING:
         return (
