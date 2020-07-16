@@ -80,7 +80,8 @@ export function getJobStatusAbstract(status) {
   }
 }
 
-export const RUNTIME_COMMANDS = {
-  CONFIRM: ':confirm',
-  CANCEL: ':cancel'
+export const WORKFLOW_COMMANDS = {
+  CONFIRM: 'confirm',
+  CANCEL: 'cancel',
+  SHOW: 'show'
 };

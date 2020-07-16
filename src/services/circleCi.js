@@ -1,5 +1,6 @@
 import axios from "axios";
-import {getJobStatusAbstract, JOB_STATUS_ABSTRACT} from "../constants";
+import {getJobStatusAbstract, JOB_STATUS_ABSTRACT, WORKFLOW_COMMANDS} from "../constants";
+import execa from "execa";
 
 export async function waitForWorkflowToOccur(commitHash) {
   while(1) {
@@ -18,10 +19,17 @@ export async function sleep(timeout) {
 }
 
 export async function getWorkflowJobs(workflowId) {
+  const workflowRes = await axios.get(`https://circleci.com/api/v2/workflow/${workflowId}`);
+  const workflowCanceled = workflowRes.data.status === 'canceled';
+
   const workflowJobsRes = await axios.get(`https://circleci.com/api/v2/workflow/${workflowId}/job`);
   const jobs = workflowJobsRes.data.items;
   return await Promise.all(
     jobs.map(job => {
+      if (![JOB_STATUS_ABSTRACT.SUCCESS, JOB_STATUS_ABSTRACT.FAILED].includes(getJobStatusAbstract(job.status)) && workflowCanceled) {
+        // CircleCI bug that does not update job status to canceled after workflow cancellation
+        job.status = 'canceled'
+      }
       const { job_number, project_slug } = job;
       if (!!job_number) {
         return new Promise(async resolve => {
@@ -51,13 +59,33 @@ export async function refreshWorkflowJobsUnlessFinished(workflowId, workflowJobs
   }
 }
 
+export async function showOnTheWeb(workflowId) {
+  const res = await axios.get(`https://circleci.com/api/v2/workflow/${workflowId}`);
+  const {
+    project_slug,
+    pipeline_number
+  } = res.data;
+  execa('open', [`https://app.circleci.com/pipelines/${project_slug.replace('gh/', 'github/')}/${pipeline_number}/workflows/${workflowId}`], { shell: true })
+}
+
 export async function confirmOnHoldJob(workflowId, workflowJobs) {
-  const onHoldJob = workflowJobs.find(job => getJobStatusAbstract(job.status) === JOB_STATUS_ABSTRACT.ON_HOLD);
+  const onHoldJob = getOnHoldJob(workflowJobs);
   if (!!onHoldJob) {
     await axios.post(`https://circleci.com/api/v2/workflow/${workflowId}/approve/${onHoldJob.id}`);
   }
 }
+function getOnHoldJob(workflowJobs) {
+  return workflowJobs.find(job => getJobStatusAbstract(job.status) === JOB_STATUS_ABSTRACT.ON_HOLD)
+}
 
 export async function cancelWorkflow(workflowId) {
   await axios.post(`https://circleci.com/api/v2/workflow/${workflowId}/cancel`);
+}
+
+export function getAvailableWorkflowCommands(workflowJobs) {
+  const availableCommands = [WORKFLOW_COMMANDS.SHOW, WORKFLOW_COMMANDS.CANCEL];
+  if (getOnHoldJob(workflowJobs)) {
+    availableCommands.push(WORKFLOW_COMMANDS.CONFIRM);
+  }
+  return availableCommands;
 }

@@ -3,15 +3,16 @@ import React, { useState, useEffect } from 'react';
 import {
   cancelWorkflow,
   confirmOnHoldJob,
+  getAvailableWorkflowCommands,
+  showOnTheWeb,
   getWorkflowJobs,
   refreshWorkflowJobsUnlessFinished,
   waitForWorkflowToOccur
 } from "../services/circleCi";
 import importJsx from 'import-jsx';
 import execa from "execa";
-import {Box, Color, Text, useStdin} from "ink";
+import {Box, Color, Text} from "ink";
 import Spinner from "ink-spinner";
-import {RUNTIME_COMMANDS} from "../constants";
 
 const Workflow = importJsx('./Workflow.js');
 
@@ -20,8 +21,6 @@ function App({ commit }) {
     jobs: [],
     commitHash: ''
   });
-
-  const {stdin} = useStdin();
 
   useEffect(() => {
     async function extractGitCommit() {
@@ -36,31 +35,25 @@ function App({ commit }) {
         commitHash,
         commitMessage
       } = await extractGitCommit();
-      setState({
+      setState((state) => ({
         ...state,
         commitHash,
         commitMessage
-      });
+      }));
       const workflowId = await waitForWorkflowToOccur(commitHash);
       let activeWorkflowJobs = await getWorkflowJobs(workflowId);
-      stdin.on('data', (data) => {
-        switch (data.toString().trim()) {
-          case RUNTIME_COMMANDS.CONFIRM:
-            return confirmOnHoldJob(workflowId, activeWorkflowJobs);
-          case RUNTIME_COMMANDS.CANCEL:
-            return cancelWorkflow(workflowId);
-        }
-      });
       do {
-        setState({
+        setState((state) => ({
           ...state,
+          workflowId,
           jobs: activeWorkflowJobs,
+          availableWorkflowCommands: getAvailableWorkflowCommands(activeWorkflowJobs),
           commitHash,
           commitMessage
-        });
+        }));
         activeWorkflowJobs = await refreshWorkflowJobsUnlessFinished(workflowId, activeWorkflowJobs)
       } while (!!activeWorkflowJobs);
-      stdin.destroy()
+      setState((state) => ({ ...state, availableWorkflowCommands: []}))
     }
     asyncUseEffect()
   }, []);
@@ -68,7 +61,9 @@ function App({ commit }) {
   const {
     jobs,
     commitHash,
-    commitMessage
+    commitMessage,
+    availableWorkflowCommands,
+    workflowId
   } = state;
   return (
     <Box flexDirection="column">
@@ -90,7 +85,13 @@ function App({ commit }) {
         </Box>
       }
       { !!jobs.length &&
-        <Workflow jobs={jobs} />
+        <Workflow
+          jobs={jobs}
+          availableWorkflowCommands={availableWorkflowCommands}
+          showOnTheWeb={showOnTheWeb.bind(this, workflowId, jobs)}
+          confirmOnHoldJob={confirmOnHoldJob.bind(this, workflowId, jobs)}
+          cancelWorkflow={cancelWorkflow.bind(this, workflowId)}
+        />
       }
     </Box>
   )
