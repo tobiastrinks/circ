@@ -61,6 +61,12 @@ class Workflow extends Component {
                   <Text>Abort workflow</Text>
                 </Text>
               )}
+              { availableWorkflowCommands.includes(WORKFLOW_COMMANDS.LIST) && (
+                <Text>
+                  <Box width={10}><Color yellow>list</Color></Box>
+                  <Text>Go to workflow overview</Text>
+                </Text>
+              )}
               <Box>
                 <Box marginRight={1}>$</Box>
                 <InkTextInput value={this.state.commandInput} onChange={this.handleCommandChange} onSubmit={this.handleCommandSubmit} />
@@ -80,12 +86,13 @@ class Workflow extends Component {
       availableWorkflowCommands,
       showOnTheWeb,
       confirmOnHoldJob,
-      cancelWorkflow
+      cancelWorkflow,
+      gotoWorkflowList
     } = this.props;
     if (!availableWorkflowCommands.includes(commandInput)) {
       return
     }
-
+    this.setState({commandInput: ''})
     switch (commandInput) {
       case WORKFLOW_COMMANDS.SHOW:
         showOnTheWeb();
@@ -96,8 +103,10 @@ class Workflow extends Component {
       case WORKFLOW_COMMANDS.CANCEL:
         cancelWorkflow();
         break;
+      case WORKFLOW_COMMANDS.LIST:
+        gotoWorkflowList();
+        break;
     }
-    this.setState({commandInput: ''})
   }
 }
 

@@ -83,5 +83,6 @@ export function getJobStatusAbstract(status) {
 export const WORKFLOW_COMMANDS = {
   CONFIRM: 'confirm',
   CANCEL: 'cancel',
-  SHOW: 'show'
+  SHOW: 'show',
+  LIST: 'list',
 };

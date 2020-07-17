@@ -43,7 +43,11 @@ export default async function cli(args) {
   axios.defaults.auth = {
     username: process.env.CIRCLE_TOKEN || 'c502d28cd75e602ab6797e7c6e2dbf0db49e66c4'
   };
-  const { flags: { commit } } = meowCli;
+  const { input } = meowCli;
+  const props = {};
+  if (input[0] === 'list') {
+    props.list = true;
+  }
 
-  render(React.createElement(ui, meowCli.flags));
+  render(React.createElement(ui, props));
 }

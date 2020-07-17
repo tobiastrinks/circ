@@ -2,6 +2,39 @@ import axios from "axios";
 import {getJobStatusAbstract, JOB_STATUS_ABSTRACT, WORKFLOW_COMMANDS} from "../constants";
 import execa from "execa";
 
+export async function getWorkflowList() {
+  const res = await axios.get('https://circleci.com/api/v1.1/recent-builds');
+  const recentJobs = res.data;
+
+  const workflowIds = recentJobs.map(job => job.workflows.workflow_id);
+  const distinctWorkflowIds = [...new Set(workflowIds)];
+
+  const workflowList = [];
+
+  for (const workflowId of distinctWorkflowIds) {
+    const workflowRes = await axios.get(`https://circleci.com/api/v2/workflow/${workflowId}`);
+    const workflowJobs = recentJobs.filter(job => job.workflows.workflow_id === workflowId);
+
+    const latestJob = workflowJobs[0];
+
+    const { status } = workflowRes.data;
+    const { username, reponame, branch, workflows: { workflow_name, job_name }, subject, committer_date, vcs_revision } = latestJob;
+    workflowList.push({
+      id: workflowId,
+      status,
+      username,
+      reponame,
+      branch,
+      workflow_name,
+      subject,
+      committer_date,
+      vcs_revision,
+      job_name
+    })
+  }
+  return workflowList
+}
+
 export async function waitForWorkflowToOccur(commitHash) {
   while(1) {
     const recentJobsRes = await axios.get('https://circleci.com/api/v1.1/recent-builds');
@@ -46,17 +79,13 @@ export async function getWorkflowJobs(workflowId) {
   );
 }
 
-export async function refreshWorkflowJobsUnlessFinished(workflowId, workflowJobs) {
-  const activeJob = workflowJobs.find(job => [
+export function areWorkflowJobsFinished(workflowJobs) {
+  return !workflowJobs.find(job => [
     JOB_STATUS_ABSTRACT.WAITING,
     JOB_STATUS_ABSTRACT.BLOCKED,
     JOB_STATUS_ABSTRACT.RUNNING,
     JOB_STATUS_ABSTRACT.ON_HOLD
-  ].includes(getJobStatusAbstract(job.status)));
-  if (!!activeJob) {
-    await sleep(3000);
-    return await getWorkflowJobs(workflowId);
-  }
+  ].includes(getJobStatusAbstract(job.status)))
 }
 
 export async function showOnTheWeb(workflowId) {
@@ -83,7 +112,7 @@ export async function cancelWorkflow(workflowId) {
 }
 
 export function getAvailableWorkflowCommands(workflowJobs) {
-  const availableCommands = [WORKFLOW_COMMANDS.SHOW, WORKFLOW_COMMANDS.CANCEL];
+  const availableCommands = [WORKFLOW_COMMANDS.SHOW, WORKFLOW_COMMANDS.CANCEL, WORKFLOW_COMMANDS.LIST];
   if (getOnHoldJob(workflowJobs)) {
     availableCommands.push(WORKFLOW_COMMANDS.CONFIRM);
   }
