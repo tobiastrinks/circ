@@ -1,7 +1,7 @@
 {
   "name": "@ttrinks/circ",
   "version": "1.0.0",
-  "description": "Command Line Interface to display CircleCI workflow progress.",
+  "description": "CLI for viewing and interacting with running CircleCI workflows.",
   "main": "src/cli.js",
   "bin": {
     "@ttrinks/circ": "bin/circ",

@@ -13,28 +13,14 @@ const ui = importJsx('./components/App.js');
 
 const meowCli = meow(`
     Usage
-      1. Authenticate your current session via the official 1Password CLI
-      $ op signin
+      Authenticate with your Personal CircleCI Token
+      $ circ auth <TOKEN>
       
-      2. Set environment variable from your 1Password note for your command
-      $ openv <secret-note> -c <your-command>
-    
-      (optional) Install auto-completion for secret note names
-      $ openv install-completion
-
-    Options
-      --command, -c   The command you want to execute
-      --env, -e       Manually overwrite values from 1Password note
-    
-    Examples
-      Login to your database using credentials from 1Password
-      $ openv psql-secrets -c psql
+      Show latest workflow from current directory
+      $ circ
       
-      Run your web-app with 1Password configuration and overwrite API_URL
-      $ openv web-app-env -c "npm run dev" -e "API_URL=http://localhost:3000"
-      
-      Export secret environment variables in current shell
-      $ export $(openv my-secrets)
+      List latest CircleCI workflows
+      $ circ list
   `, {
   flags: {
     commit: {
@@ -67,12 +53,12 @@ export default async function cli() {
 
   const token = readTokenFromConfigFile()
   if (!token) {
-    return console.error('You have to authenticate first: `circ auth TOKEN` \nCreate a Personal API Token here: https://app.circleci.com/settings/user/tokens.')
+    return console.error('You have to authenticate first: $ circ auth <TOKEN> \nCreate a Personal API Token here: https://app.circleci.com/settings/user/tokens.')
   }
   setAxiosDefaultAuth(token)
   axios.interceptors.response.use(res => res, (err) => {
     if (err.response && err.response.status === 401) {
-      throw 'Your authentication token is invalid. You can create a Personal API Token here: https://app.circleci.com/settings/user/tokens. Then run `circ auth TOKEN`'
+      throw 'Your authentication token is invalid. You can create a Personal API Token here: https://app.circleci.com/settings/user/tokens. Then run $ circ auth <TOKEN>'
     }
     return err
   })
