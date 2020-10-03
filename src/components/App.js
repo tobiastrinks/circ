@@ -106,7 +106,7 @@ class App extends Component {
     } = this.state;
     return (
       <Box flexDirection="column">
-        { !workflowId && !workflowList.length &&
+        { !commitHash && !workflowId && !workflowList.length &&
         <Box>
           <Box marginRight={1}>
             <Text color="yellow">
