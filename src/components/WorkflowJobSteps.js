@@ -1,9 +1,9 @@
 'use strict';
-import React, { Component } from 'react';
-import {Text, Box, Color} from 'ink';
+import React, {Component} from 'react';
+import {Box, Text} from 'ink';
 import PropTypes from "prop-types";
 import importJsx from "import-jsx";
-import {getJobStatusAbstract, JOB_STATUS_ABSTRACT} from "../constants";
+import {getJobStatusAbstract} from "../constants";
 
 const WorkflowStatusIcon = importJsx('./WorkflowStatusIcon.js');
 

@@ -1,6 +1,6 @@
 'use strict';
-import React, { Component } from 'react';
-import {Text, Color, Box} from 'ink';
+import React, {Component} from 'react';
+import {Box, Text} from 'ink';
 import PropTypes from "prop-types";
 import Spinner from "ink-spinner";
 import {JOB_STATUS_ABSTRACT} from "../constants";
@@ -19,9 +19,9 @@ class WorkflowStatusIcon extends Component {
       case JOB_STATUS_ABSTRACT.RUNNING:
         return (
           <Box>
-            <Color yellow>
+            <Text color="yellow">
               <Spinner type="point" />
-            </Color>
+            </Text>
           </Box>
         )
       case JOB_STATUS_ABSTRACT.SUCCESS:

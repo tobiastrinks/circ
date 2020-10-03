@@ -1,6 +1,6 @@
 'use strict';
-import React, { Component } from 'react';
-import {Text, Box, Color, useStdin} from 'ink';
+import React, {Component} from 'react';
+import {Box, Text} from 'ink';
 import PropTypes from "prop-types";
 import importJsx from "import-jsx";
 import {getJobStatusAbstract, JOB_STATUS_ABSTRACT, WORKFLOW_COMMANDS} from "../constants";
@@ -26,10 +26,10 @@ class Workflow extends Component {
         <Box key={index} flexDirection="column" marginBottom={1} marginTop={1}>
           <Box>
             <WorkflowStatusIcon status={abstractStatus} />
-            <Color bgHex={abstractStatus === JOB_STATUS_ABSTRACT.ON_HOLD ? '#4f4f00' : null}>
+            <Text backgroundColor={abstractStatus === JOB_STATUS_ABSTRACT.ON_HOLD ? '#4f4f00' : null}>
               <Text bold={true}>{job.name}</Text>
               <Text> [{job.status}]</Text>
-            </Color>
+            </Text>
           </Box>
           <Box flexDirection="column" marginLeft={4}>
             { !!job.detailed && <WorkflowJobSteps steps={job.detailed.steps} /> }
@@ -44,31 +44,33 @@ class Workflow extends Component {
             <Box marginTop={2} flexDirection="column">
               <Text bold>Available commands:</Text>
               { availableWorkflowCommands.includes(WORKFLOW_COMMANDS.SHOW) && (
-                <Text>
-                  <Box width={10}><Color yellow>show</Color></Box>
+                <Box>
+                  <Box width={10}><Text color="yellow">show</Text></Box>
                   <Text>Open workflow on the web</Text>
-                </Text>
+                </Box>
               )}
               { availableWorkflowCommands.includes(WORKFLOW_COMMANDS.CONFIRM) && (
-                <Text>
-                  <Box width={10}><Color yellow>confirm</Color></Box>
+                <Box>
+                  <Box width={10}><Text color="yellow">confirm</Text></Box>
                   <Text>Continue on_hold workflow</Text>
-                </Text>
+                </Box>
               )}
               { availableWorkflowCommands.includes(WORKFLOW_COMMANDS.CANCEL) && (
-                <Text>
-                  <Box width={10}><Color yellow>cancel</Color></Box>
+                <Box>
+                  <Box width={10}><Text color="yellow">cancel</Text></Box>
                   <Text>Abort workflow</Text>
-                </Text>
+                </Box>
               )}
               { availableWorkflowCommands.includes(WORKFLOW_COMMANDS.LIST) && (
-                <Text>
-                  <Box width={10}><Color yellow>list</Color></Box>
+                <Box>
+                  <Box width={10}><Text color="yellow">list</Text></Box>
                   <Text>Go to workflow overview</Text>
-                </Text>
+                </Box>
               )}
               <Box>
-                <Box marginRight={1}>$</Box>
+                <Box marginRight={1}>
+                  <Text>$</Text>
+                </Box>
                 <InkTextInput value={this.state.commandInput} onChange={this.handleCommandChange} onSubmit={this.handleCommandSubmit} />
               </Box>
             </Box>

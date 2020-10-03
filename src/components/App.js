@@ -1,21 +1,21 @@
 'use strict';
-import React from 'react';
+import React, {Component} from 'react';
 import {
+  areWorkflowJobsFinished,
   cancelWorkflow,
   confirmOnHoldJob,
   getAvailableWorkflowCommands,
-  showOnTheWeb,
   getWorkflowJobs,
-  waitForWorkflowToOccur,
-  getWorkflowList, areWorkflowJobsFinished
+  getWorkflowList,
+  showOnTheWeb,
+  waitForWorkflowToOccur
 } from "../services/circleCi";
 import importJsx from 'import-jsx';
 import execa from "execa";
-import {Box, Color, Text} from "ink";
+import {Box, Text} from "ink";
 import Spinner from "ink-spinner";
 import PropTypes from "prop-types";
 
-import { Component } from 'react';
 const Workflow = importJsx('./Workflow.js');
 const WorkflowList = importJsx('./WorkflowList.js');
 
@@ -106,10 +106,20 @@ class App extends Component {
     } = this.state;
     return (
       <Box flexDirection="column">
+        { !workflowId && !workflowList.length &&
+        <Box>
+          <Box marginRight={1}>
+            <Text color="yellow">
+              <Spinner type="point" />
+            </Text>
+          </Box>
+          <Text>Loading workflow list</Text>
+        </Box>
+        }
         { !workflowId && !!workflowList.length &&
         <WorkflowList workflows={workflowList} selectItem={this.selectWorkflowItem} />
         }
-        { !!workflowId &&
+        { !!commitHash && !!commitMessage &&
         <Box flexDirection="column" border>
           <Text bold>🐙 VSC Context</Text>
           <Text>commit: {commitHash}</Text>
@@ -118,12 +128,12 @@ class App extends Component {
           }
         </Box>
         }
-        { !!workflowId && !jobs.length &&
+        { !!commitHash && !!commitMessage && !jobs.length &&
         <Box marginTop={1}>
           <Box marginRight={1}>
-            <Color yellow>
+            <Text color="yellow">
               <Spinner type="point" />
-            </Color>
+            </Text>
           </Box>
           <Text bold>Waiting for CircleCI Workflow</Text>
         </Box>

@@ -1,5 +1,5 @@
 'use strict';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from "prop-types";
 import InkSelectInput from "ink-select-input";
 import importJsx from "import-jsx";
